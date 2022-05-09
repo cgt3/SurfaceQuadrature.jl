@@ -3,6 +3,9 @@ uuid = "01069e04-418b-4c76-a08e-da6387009f4e"
 authors = ["Christina G Taylor"]
 version = "0.1.0"
 
+[deps]
+GaussQuadrature = "d54b0c1a-921d-58e0-8e36-89d8069c0969"
+
 [compat]
 julia = "1.7.2"
 
