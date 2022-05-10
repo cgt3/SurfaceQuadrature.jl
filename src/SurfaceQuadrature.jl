@@ -38,7 +38,7 @@ end
 
 function get_consecutive_line_quadratures(ref_quadr,
     curve::Function,
-    stop_points;
+    stop_points::Union{Array, Tuple};
     ref_domain_all=(-1,1),
     normalization_all=false )
 
@@ -60,7 +60,7 @@ end
 
 function get_multiple_line_quadratures(ref_quadr,
     curve::Function,
-    s_bounds::Array{Tuple, 1};
+    s_bounds::Union{Array, Tuple};
     ref_domain_all=(-1,1),
     normalization_all=false )
 
