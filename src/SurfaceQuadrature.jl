@@ -33,8 +33,19 @@ function get_line_quadrature(ref_quadr, curve, s_domain, curveParams...; ref_dom
 
     return line_pts, line_weights, normals
 end
-
-function get_all_line_quadratures(ref_quadr, curve, stop_points, curveParams; ref_domain=(-1,1))
+# get_line_quadrature(ref_quadr, curve, s_domain, curveParams...; ref_domain=(-1,1), normalization=false)
+function get_all_line_quadratures(ref_quadr, curve, stop_points, curveParams; ref_domain_all=(-1,1), normalization_all=false)
+    # TODO: Allow non-consectuive stop_pts?
+    pts_by_segment = 
+    wts_by_segment = 
+    normals_by_segment = 
+    for i = 2: length(stop_pts)
+        segment_pts, segment_wts, segment_normals = get_line_quadrature(ref_quadr, curve (stop_points[i-1], stop_points[i]), 
+            curveParams..., ref_domain=ref_domain_all, normalization=normalization_all)
+        push!(pts_by_segment, segment_pts)
+        push!(wts_by_segment, segment_wts)
+        push!(normals_by_segment, segment_normals)
+    end
 
 end
 
