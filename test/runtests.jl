@@ -2,10 +2,10 @@ using SurfaceQuadrature
 using GaussQuadrature
 using Test
 
+const TESTING_TOL = 1e-15
+
 @testset "SurfaceQuadrature.jl" begin
     @testset "get_line_quadrature" begin
-        testing_tol = 1e-15
-
         # 1. Identity mapping
         @testset "Identity mapping" begin
             ref_pts, ref_wts = legendre(5) # Legendre-Gauss quadrature
@@ -20,7 +20,7 @@ using Test
 
             for i = 1:length(ref_pts)
                 diff = abs.(line_pts[i] - ref_pts_2D[i])
-                @test maximum(diff) < testing_tol
+                @test maximum(diff) < TESTING_TOL
                 @test normals[i] == [0, -1]
             end
         end
@@ -39,13 +39,57 @@ using Test
 
             for i = 1:length(ref_pts)
                 diff_pts = abs.(line_pts[i] - true_pts_2D[i])
-                @test maximum(diff_pts) < testing_tol
+                @test maximum(diff_pts) < TESTING_TOL
                 
                 diff_normals = abs.(normals[i] - sqrt(2)/2*[1, -1])
-                @test maximum(diff_normals) < testing_tol
+                @test maximum(diff_normals) < TESTING_TOL
             end
         end
+    end # testset: "get_line_quadrature"
 
+    @testset "get_consecutive_line_quadratures" begin
+         # 2. Linear mapping to test normalization
+         @testset "Linear mapping w normalization" begin
+            ref_pts, ref_wts = legendre(5) # Legendre-Gauss quadrature
+            true_pts_2D = [ 0.5*[ref_pts[i] + 1, ref_pts[i] + 1] for i in 1:length(ref_pts)]
 
-    end # test_set: "get_line_quadrature"
+            line(s) = [s, s] # simple linear function
+            stop_pts = [-1, 0, 1] # Yields 2 intervals, [-1,0], [0,1]
+
+            line_pts, line_wts, normals = get_consecutive_line_quadratures((ref_pts, ref_wts), line, stop_pts, normalization_all=true)
+            @test length(line_wts) == 2
+            @test length(line_pts) == 2
+            @test length(normals) == 2
+            
+            @test length(line_wts[1]) == 5
+            @test length(line_pts[1]) == 5
+            @test length(normals[1]) == 5
+            
+            @test length(line_wts[2]) == 5
+            @test length(line_pts[2]) == 5
+            @test length(normals[2]) == 5
+
+            # Interval [-1, 0]
+            for i = 1:length(ref_pts)
+                diff_pts = abs.(line_pts[1][i] - (-true_pts_2D[end-i+1]) )
+                @test maximum(diff_pts) < TESTING_TOL
+                    
+                diff_normals = abs.(normals[1][i] - sqrt(2)/2*[1, -1])
+                @test maximum(diff_normals) < TESTING_TOL
+            end
+
+            # Interval [0, 1]
+            for i = 1:length(ref_pts)
+                diff_pts = abs.(line_pts[2][i] - true_pts_2D[i])
+                @test maximum(diff_pts) < TESTING_TOL
+                    
+                diff_normals = abs.(normals[2][i] - sqrt(2)/2*[1, -1])
+                @test maximum(diff_normals) < TESTING_TOL
+            end
+        end
+    end # testset: "get_consecutive_line_quadratures
+
+    @testset "get_multiple_line_quadratures" begin
+        
+    end # testset: "get_multiple_line_quadratures
 end
